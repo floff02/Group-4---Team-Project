@@ -16,7 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 //imports all the libraries that are needed for this page of the app
 public class SignUp extends AppCompatActivity {
     //Initializes all variables
-    TextInputEditText editTextEmail, editTextPassword;
+    TextInputEditText editTextEmail, editTextPassword, editTextconfirmPassword, editTextDOB;
 
     Button signUp;
 
@@ -31,6 +31,8 @@ public class SignUp extends AppCompatActivity {
         // connects variables to the xml through IDs
         editTextEmail = findViewById(R.id.email);
         editTextPassword = findViewById(R.id.password);
+        editTextconfirmPassword = findViewById(R.id.confirmPassword);
+        editTextDOB = findViewById(R.id.DOB);
         signIn = findViewById(R.id.sign_in);
         signUp = findViewById(R.id.sign_up);
 
@@ -38,7 +40,7 @@ public class SignUp extends AppCompatActivity {
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Register.this, MainActivity.class);
+                Intent intent = new Intent(SignUp.this, Login.class);
                 startActivity(intent);
                 finish();
             }
@@ -47,34 +49,43 @@ public class SignUp extends AppCompatActivity {
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email, password;
+                String email, password, confirmPassword, DOB;
                 email = String.valueOf(editTextEmail.getText());
                 password = String.valueOf(editTextPassword.getText());
-
+                confirmPassword = String.valueOf(editTextconfirmPassword.getText());
+                DOB = String.valueOf(editTextDOB.getText());
                 if(TextUtils.isEmpty(email)){
-                    Toast.makeText(Register.this,"Enter Email", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignUp.this,"Enter Email", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if(TextUtils.isEmpty(password)){
-                    Toast.makeText(Register.this, "Enter Password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignUp.this, "Enter Password", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                //
-                firebaseAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if(task.isSuccessful()){
-                                    Toast.makeText(Register.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(Register.this, MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
+                if(TextUtils.isEmpty(DOB)){
+                    Toast.makeText(SignUp.this, "Enter your Date of Birth", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(password.equals(confirmPassword)) {
+
+                    firebaseAuth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(SignUp.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(SignUp.this, MainActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Toast.makeText(SignUp.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
-                                else  {
-                                    Toast.makeText(Register.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+                            });
+                }
+                else{
+                    Toast.makeText(SignUp.this, "Please Ensure your Passwords Match", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
